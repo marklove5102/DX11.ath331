@@ -10,8 +10,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 Game::Game()
 {
-	m_width  = 0;
-	m_height = 0;
+	m_hwnd   = (HWND)( 0 );
+	m_width  = GWinSizeX;
+	m_height = GWinSizeY;
+
+	m_viewPort = { 0 };
+
+	m_device        = nullptr;
+	m_deviceContext = nullptr;
+	m_swapChain     = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,9 +33,11 @@ Game::~Game()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void Game::Init( HWND hwnd )
 {
-	m_hwnd   = hwnd;
-	m_width  = GWinSizeX;
-	m_height = GWinSizeY;
+	m_hwnd = hwnd;
+
+	_CreateDeviceAndSwapChain();
+	_CreateRenderTargetView();
+	_SetViewPort();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,4 +52,105 @@ void Game::Update()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void Game::Render()
 {
+	_RenderBegin();
+
+	// TODO
+	// IA - VS - RS - PS - OM
+	{
+
+	}
+
+	_RenderEnd();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief 렌더링을 시작한다.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void Game::_RenderBegin()
+{
+	m_deviceContext->OMSetRenderTargets( 1, m_renderTargetView.GetAddressOf(), nullptr );
+	m_deviceContext->ClearRenderTargetView( m_renderTargetView.Get(), m_clearColor );
+	m_deviceContext->RSSetViewports( 1, &m_viewPort );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief 렌더링을 종료한다.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void Game::_RenderEnd()
+{
+	// 전면버퍼와 후면버퍼를 이용하고있고, _RenderBegin()를 통해서 후면 버퍼에 완성시킨걸
+	// 전면 버퍼로 옮겨달라는 의미
+	HRESULT hr = m_swapChain->Present( 1, 0 );
+	CHECK( hr );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief Device와 SwapChain 객체를 생성한다.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void Game::_CreateDeviceAndSwapChain()
+{
+	DXGI_SWAP_CHAIN_DESC desc;
+	ZeroMemory( &desc, sizeof( desc ) );
+	{
+		desc.BufferDesc.Width                   = m_width;
+		desc.BufferDesc.Height                  = m_height;
+		desc.BufferDesc.RefreshRate.Numerator   = 60;
+		desc.BufferDesc.RefreshRate.Denominator = 1;
+		desc.BufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.BufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		desc.BufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
+		desc.SampleDesc.Count                   = 1;
+		desc.SampleDesc.Quality                 = 0;
+		desc.BufferUsage                        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		desc.BufferCount                        = 1;
+		desc.OutputWindow                       = m_hwnd;
+		desc.Windowed                           = true;
+		desc.SwapEffect                         = DXGI_SWAP_EFFECT_DISCARD;
+	}
+
+	HRESULT hr = ::D3D11CreateDeviceAndSwapChain(
+		nullptr,
+		D3D_DRIVER_TYPE_HARDWARE,
+		nullptr,
+		0,
+		nullptr,
+		0,
+		D3D11_SDK_VERSION,
+		&desc,
+		m_swapChain.GetAddressOf(),
+		m_device.GetAddressOf(),
+		nullptr,
+		m_deviceContext.GetAddressOf() );
+
+	std::cout << "한글 테스트" << std::endl;
+
+	HR_LOG( hr );
+	CHECK( hr );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief RenderTargetView 객체를 생성한다.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void Game::_CreateRenderTargetView()
+{
+	ComPtr < ID3D11Texture2D > backBuffer = nullptr;
+
+	HRESULT hr = m_swapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (void**)( backBuffer.GetAddressOf() ) );
+	CHECK( hr );
+
+	m_device->CreateRenderTargetView( backBuffer.Get(), nullptr, m_renderTargetView.GetAddressOf() );
+	CHECK( hr );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief ViewPort를 세팅한다.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void Game::_SetViewPort()
+{
+	m_viewPort.TopLeftX = 0.f;
+	m_viewPort.TopLeftY = 0.f;
+	m_viewPort.Width = static_cast< float> ( m_width );
+	m_viewPort.Height = static_cast< float> ( m_height );
+	m_viewPort.MinDepth = 0.f;
+	m_viewPort.MaxDepth = 1.f;
 }

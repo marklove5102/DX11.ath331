@@ -1,0 +1,71 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief StringUtils File
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+#include "pch.h"
+#include <algorithm>
+#include "StringUtils.h"
+#include "Log/AtLog.h"
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief string 문자열을 wstring으로 변환한다.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+std::wstring StringUtils::ConvertToWString( const std::string& str )
+{
+	// std::wstring wstr( str.size(), L' ' );
+	// mbstowcs( &wstr[ 0 ], str.c_str(), str.size() );
+	// return wstr;
+
+	int sizeNeeded = MultiByteToWideChar( CP_UTF8, 0, str.c_str(), -1, NULL, 0 );
+	std::wstring wstr( sizeNeeded, 0 );
+	MultiByteToWideChar( CP_UTF8, 0, str.c_str(), -1, &wstr[ 0 ], sizeNeeded );
+	return wstr;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief wstring 문자열을 string으로 변환한다.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+std::string StringUtils::ConvertToString( const std::wstring& wstr )
+{
+    size_t len = wcstombs( nullptr, wstr.c_str(), 0 );
+    if ( len == static_cast<size_t>( -1 ) )
+    {
+        throw std::runtime_error( "Conversion error" );
+    }
+
+    std::string str( len, '\0' );
+    wcstombs( &str[ 0 ], wstr.c_str(), len );
+    return str;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief 문자열을 int64형으로 반환한다.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+__int64 StringUtils::GetAtInt64( std::string str )
+{
+	try
+	{
+		return std::atoi( str.c_str() );
+	}
+	catch ( const std::exception& e )
+	{
+		WARNNING_LOG( "Invalid stoi. value : " + str );
+		return 0;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// @brief 문자열을 bool형으로 반환한다.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+bool StringUtils::GetBool( std::string str )
+{
+	std::transform( str.begin(), str.end(), str.begin(),
+					[]( unsigned char c ) { return std::tolower( c ); } );
+
+	if ( str == "true" || str == "t" )
+		return true;
+
+	return false;
+}

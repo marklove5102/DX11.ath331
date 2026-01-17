@@ -12,6 +12,12 @@
     <Filter Include="01.Main">
       <UniqueIdentifier>{5c90fae9-5b97-43f9-bebe-45712c4fe3c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Basic">
+      <UniqueIdentifier>{ecdcf2f9-4ce5-43ef-b477-353113ceaea2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Basic\Console">
+      <UniqueIdentifier>{c10c9f96-9ca0-40fe-b7ea-9b3326d0a722}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -41,6 +47,9 @@
     <ClInclude Include="Game.h">
       <Filter>01.Main</Filter>
     </ClInclude>
+    <ClInclude Include="Basic\Console\ConsoleUtil.h">
+      <Filter>Basic\Console</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="main.rc">
@@ -62,6 +71,9 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Game.cpp">
       <Filter>01.Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Basic\Console\ConsoleUtil.cpp">
+      <Filter>Basic\Console</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

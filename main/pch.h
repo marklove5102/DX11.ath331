@@ -5,12 +5,11 @@
 #include "Types.h"
 #include "Struct.h"
 
+#include <iostream>
 #include <vector>
 #include <list>
 #include <map>
 #include <unordered_map>
-
-using namespace std;
 
 #include <windows.h>
 #include <assert.h>
@@ -23,6 +22,10 @@ using namespace std;
 #include <DirectXTex/DirectXTex.h>
 #include <DirectXTex/DirectXTex.inl>
 
+
+#include "Utils/Log/AtLog.h"
+
+
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
@@ -31,6 +34,10 @@ using namespace Microsoft::WRL;
 
 #ifdef _DEBUG
 #pragma comment(lib,"DirectXTex\\DirectXTex_debug.lib")
+#pragma comment(lib,"Common\\Common.lib")
 #else
 #pragma comment(lib,"DirectXTex\\DirectXTex.lib")
+#pragma comment(lib,"Common\\Common.lib")
 #endif
+
+#define CHECK( p ) assert( SUCCEEDED( p ) )

@@ -5,6 +5,8 @@
 #include "framework.h"
 #include "main.h"
 #include "Game.h"
+#include "Basic/Console/ConsoleUtil.h"
+
 
 #define MAX_LOADSTRING 100
 
@@ -22,6 +24,8 @@ int APIENTRY wWinMain( _In_ HINSTANCE hInstance,
                        _In_ LPWSTR    lpCmdLine,
                        _In_ int       nCmdShow )
 {
+    ConsoleUtil consoleUtil;
+
     MyRegisterClass( hInstance );
 
     // 애플리케이션 초기화를 수행합니다:
@@ -96,7 +100,7 @@ BOOL InitInstance( HINSTANCE hInstance, int nCmdShow )
     RECT windowsRect = { 0, 0, GWinSizeX, GWinSizeY };
     ::AdjustWindowRect( &windowsRect, WS_OVERLAPPEDWINDOW, false );
 
-    HWND hWnd = CreateWindowW( L"main", L"Client", WS_OVERLAPPEDWINDOW,
+    hWnd = CreateWindowW( L"main", L"Client", WS_OVERLAPPEDWINDOW,
                                CW_USEDEFAULT, 0, windowsRect.right - windowsRect.left, windowsRect.bottom - windowsRect.top, nullptr, nullptr, hInstance, nullptr );
 
     if ( !hWnd )
