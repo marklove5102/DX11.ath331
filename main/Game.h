@@ -37,11 +37,10 @@ private:
 private:
 	/// Geometry
 	std::vector< Vertex > m_vertices;
-
-	/// VertexBufffer
 	ComPtr< ID3D11Buffer > m_vertexBuffer;
+	std::vector< uint32 > m_indexs;
+	ComPtr< ID3D11Buffer > m_indexBuffer;
 
-	/// InputLayOut
 	ComPtr< ID3D11InputLayout > m_inputLayout;
 
 	/// VS
@@ -51,6 +50,10 @@ private:
 	/// PS
 	ComPtr< ID3D11PixelShader > m_pixelShader;
 	ComPtr< ID3DBlob > m_psBlob;
+
+	/// SRV
+	ComPtr< ID3D11ShaderResourceView > m_resourceView;
+
 
 public:
 	/// 생성자
@@ -97,6 +100,9 @@ private:
 
 	/// PS를 생성한다.
 	void _CreatePS();
+
+	/// SRV를 생성한다.
+	void _CreateSRV();
 
 	/// Shader 파일을 로드한다.
 	void _LoadShaderFromFile(
